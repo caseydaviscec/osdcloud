@@ -19,6 +19,7 @@ Write-Output "You entered a valid asset tag number: $assetTag"
 
 # Define valid campus options
 $validCampuses = @("A", "CR", "CSHS", "CSMS", "CS100", "FCHS", "FCMS", "DCN", "W", "O")
+$nameConfirmed = $false
 do {
     # Prompt for campus
     do {
@@ -44,18 +45,48 @@ do {
     $serial = $serial.Trim()
     # Check if serial is empty, null, or contains invalid values and replace it with the asset tag
     if ([string]::IsNullOrWhiteSpace($serial) -or
-        $serial -match "(fillded|system|defaultstring|none|to be filled|unknown|not specified|na|n/a|o.e.m.)") {
+        $serial -match "(fillded|system|defaultstring|none|to be filled|unknown|not specified|na|n/a|o.e.m.|Default string)") {
         $serial = $assetTag
     }
-    # Construct the computer name
-    $computerName = "CEC$campus-Lab$roomNumber-$serial"
-    # Output the result
-    Write-Host "Generated Computer Name: $computerName" -ForegroundColor Yellow
-    # Ask for confirmation
+
+    # Inner loop for computer name confirmation
     do {
-        $confirmation = Read-Host "Is this correct? (y/n)"
-    } until ($confirmation -match '^[yYnN]$')
-} until ($confirmation -match '^[yY]$')
+        # Construct the computer name
+        $computerName = "CEC$campus-Lab$roomNumber-$serial"
+        # Output the result
+        Write-Host "Generated Computer Name: $computerName" -ForegroundColor Yellow
+        # Ask for confirmation
+        do {
+            $confirmation = Read-Host "Is this correct? (y/n)"
+        } until ($confirmation -match '^[yYnN]$')
+
+        if ($confirmation -match '^[nN]$') {
+            # Ask what they want to do
+            Write-Host "Would you like to:" -ForegroundColor Cyan
+            Write-Host "  1) Start over (re-enter campus and room)" -ForegroundColor Cyan
+            Write-Host "  2) Enter a new unique identifier for the end of the computer name" -ForegroundColor Cyan
+            do {
+                $choice = Read-Host "Enter your choice (1 or 2)"
+            } until ($choice -match '^[12]$')
+
+            if ($choice -eq '1') {
+                # Will restart the outer loop
+                break
+            }
+            else {
+                # Prompt for new identifier
+                Write-Host "Enter a new unique identifier:" -ForegroundColor Cyan
+                $serial = Read-Host
+                # Continue inner loop to show new name and confirm
+            }
+        }
+    } until ($confirmation -match '^[yY]$')
+
+    if ($confirmation -match '^[yY]$') {
+        $nameConfirmed = $true
+    }
+
+} until ($nameConfirmed)
 # Save the computer name to a file
 $computerName | Out-File -FilePath "X:\OSDCloud\Config\Scripts\ComputerName.txt" -Encoding ascii -Force
 
@@ -179,10 +210,10 @@ $OOBECMD = @'
 # Prompt for setting Lenovo Asset Tag
 start /wait powershell.exe -NoL -ExecutionPolicy Bypass -F C:\Windows\Setup\Scripts\set-lenovoassettag.ps1
 
-# Below a PS session for debug and testing in system context, # when not needed 
+# Below a PS session for debug and testing in system context, # when not needed
 # start /wait powershell.exe -NoL -ExecutionPolicy Bypass
 
-exit 
+exit
 '@
 $OOBECMD | Out-File -FilePath 'C:\Windows\Setup\scripts\oobe.cmd' -Encoding ascii -Force
 
