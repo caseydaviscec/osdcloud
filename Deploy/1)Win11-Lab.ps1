@@ -8,19 +8,19 @@ if ((Get-MyComputerModel) -match 'Virtual') {
 }
 
 # Prompt the user to enter the Asset Tag number
-do {
-    Write-Host -ForegroundColor Cyan "Please enter the asset tag number (3 to 5 digit number):"
-    $assetTag = Read-Host
-    if ($assetTag -match '^\d{3,5}$') {
-        $assetTag | Out-File -FilePath "X:\OSDCloud\Config\Scripts\AssetTag.txt" -Encoding ascii -Force
-    }
-} while ($assetTag -notmatch '^\d{3,5}$')
-Write-Output "You entered a valid asset tag number: $assetTag"
-
-# Define valid campus options
-$validCampuses = @("A", "CR", "CSHS", "CSMS", "CS100", "FCHS", "FCMS", "DCN", "W", "O")
 $nameConfirmed = $false
 do {
+    do {
+        Write-Host -ForegroundColor Cyan "Please enter the asset tag number (3 to 5 digit number):"
+        $assetTag = Read-Host
+        if ($assetTag -match '^\d{3,5}$') {
+            $assetTag | Out-File -FilePath "X:\OSDCloud\Config\Scripts\AssetTag.txt" -Encoding ascii -Force
+        }
+    } while ($assetTag -notmatch '^\d{3,5}$')
+    Write-Output "You entered a valid asset tag number: $assetTag"
+
+    # Define valid campus options
+    $validCampuses = @("A", "CR", "CSHS", "CSMS", "CS100", "FCHS", "FCMS", "DCN", "W", "O")
     # Prompt for campus
     do {
         Write-Host "Enter campus code (Options: A, CR, CSHS, CSMS, CS100, FCHS, FCMS, DCN, W, O)" -ForegroundColor Cyan
