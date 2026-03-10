@@ -1,9 +1,9 @@
 # Define variables
-$requiredModuleVersion = "25.6.10.1"
-$isoFileName = "CECWin11.1.2.iso"
-$isoDownloadUrl = "http://cec-mdt.cec.coloradoearlycolleges.org/CECWin11.1.2.iso"
+$requiredModuleVersion = "26.2.3.2"
+$isoFileName = "CECWin11.1.3.iso"
+$isoDownloadUrl = "http://cec-mdt.cec.coloradoearlycolleges.org/CECWin11.1.3.iso"
 $isoLocalPath = Join-Path -Path $env:TEMP -ChildPath $isoFileName
-$expectedfilehash = "725C20961271C648153FD25D9D0EBAF6296DC5524E9107D2E98596C6D0CC0673"
+$expectedfilehash = "A72F00797A88EFD268D7FEB685F77E96FED2572D017DD4FC79CCAE1FD5D777B4"
 
 function Download-And-VerifyISO {
     param (
