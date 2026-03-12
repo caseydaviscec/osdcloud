@@ -67,7 +67,7 @@ New-OSDCloudUSB -fromIsoFile $isoLocalPath
 $null = Dismount-DiskImage -ImagePath $isoLocalPath -ErrorAction SilentlyContinue
 
 # Step 6: Update USB with specified OS settings
-Write-Host "Updating OSDCloud USB with Windows 11 24H2 Volume License ISO..." -ForegroundColor Yellow
-Update-OSDCloudUSB -OSName 'Windows 11 24H2' -OSLanguage en-us -OSActivation Volume
+Write-Host "Updating OSDCloud USB with Windows 11 25H2 Volume License ISO..." -ForegroundColor Yellow
+Update-OSDCloudUSB -OSName 'Windows 11 25H2' -OSLanguage en-us -OSActivation Volume
 
 Write-Host "OSDCloud USB process completed successfully." -ForegroundColor Green
