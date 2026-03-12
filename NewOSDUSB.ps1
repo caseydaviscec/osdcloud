@@ -3,7 +3,7 @@ $requiredModuleVersion = "26.2.3.2"
 $isoFileName = "CECWin11.1.3.iso"
 $isoDownloadUrl = "http://cec-mdt.cec.coloradoearlycolleges.org/CECWin11.1.3.iso"
 $isoLocalPath = Join-Path -Path $env:TEMP -ChildPath $isoFileName
-$expectedfilehash = "A72F00797A88EFD268D7FEB685F77E96FED2572D017DD4FC79CCAE1FD5D777B4"
+$expectedfilehash = "227CB029424857B8B46E8C4BB3CC9BB99DDB7F5B7D9CCE741A0F56058AD4B471"
 
 function Download-And-VerifyISO {
     param (
