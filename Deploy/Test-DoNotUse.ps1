@@ -4,7 +4,7 @@
     do {
     $assetTag = Read-Host "Please enter the asset tag number (4 to 5 digit number)"
     if ($assetTag -match '^\d{4,5}$') {
-        $assetTag | Out-File -FilePath "X:\OSDCloud\Config\Scripts\AssetTag.txt" -Encoding ascii -Force
+        $assetTag | Out-File -FilePath "X:\OSDCloud\AssetTag.txt" -Encoding ascii -Force
     }
 } while ($assetTag -notmatch '^\d{4,5}$')
     Write-Output "You entered a valid asset tag number: $assetTag"
@@ -107,7 +107,7 @@ $UnattendPath = "$Panther\Unattend.xml"
 $UnattendXml | Out-File -FilePath $UnattendPath -Encoding utf8 -Width 2000 -Force
 
 Write-Host "Copying USB Drive Scripts"
-Copy-Item X:\OSDCloud\Config\Scripts C:\OSDCloud\ -Recurse -Force
+Copy-Item X:\OSDCloud\ C:\OSDCloud\ -Recurse -Force
 
 #=======================================================================
 #   Restart-Computer
