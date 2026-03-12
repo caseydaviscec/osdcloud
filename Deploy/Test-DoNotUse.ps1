@@ -1,16 +1,4 @@
-#================================================
-#   [PreOS] Update Module
-#================================================
-if ((Get-MyComputerModel) -match 'Virtual') {
-    Write-Host  -ForegroundColor Green "Setting Display Resolution to 1600x"
-    Set-DisRes 1600
-}
-
-Write-Host -ForegroundColor Green "Updating OSD PowerShell Module"
-Install-Module OSD -Force
-
-Write-Host  -ForegroundColor Green "Importing OSD PowerShell Module"
-Import-Module OSD -Force
+#Script to deploy Windows 11 Full Time A3 Staff Devices
 
 # Prompt the user to enter the Asset Tag number
     do {
@@ -19,14 +7,14 @@ Import-Module OSD -Force
         $assetTag | Out-File -FilePath "X:\OSDCloud\Config\Scripts\AssetTag.txt" -Encoding ascii -Force
     }
 } while ($assetTag -notmatch '^\d{4,5}$')
-    Write-Output "You entered a valid asset tag number: $input"
+    Write-Output "You entered a valid asset tag number: $assetTag"
 
 #=======================================================================
 #   [OS] Params and Start-OSDCloud
 #=======================================================================
 $Params = @{
     OSVersion = "Windows 11"
-    OSBuild = "24H2"
+    OSBuild = "25H2"
     OSEdition = "Pro"
     OSLanguage = "en-us"
     OSLicense = "Volume"
@@ -34,57 +22,6 @@ $Params = @{
     Firmware = $true
 }
 Start-OSDCloud @Params
-
-#================================================
-#  [PostOS] OOBEDeploy Configuration
-#================================================
-Write-Host -ForegroundColor Green "Create C:\ProgramData\OSDeploy\OSDeploy.OOBEDeploy.json"
-$OOBEDeployJson = @'
-{
-    "AddNetFX3":  {
-                      "IsPresent":  true
-                  },
-    "Autopilot":  {
-                      "IsPresent":  false
-                  },
-    "RemoveAppx":  [
-                    "Microsoft.BingWeather",
-                    "Microsoft.BingNews",
-                    "Microsoft.GamingApp",
-                    "Microsoft.GetHelp",
-                    "Microsoft.Getstarted",
-                    "Microsoft.Messaging",
-                    "Microsoft.MicrosoftOfficeHub",
-                    "Microsoft.MicrosoftSolitaireCollection",
-                    "Microsoft.MicrosoftStickyNotes",
-                    "Microsoft.People",
-                    "Microsoft.PowerAutomateDesktop",
-                    "Microsoft.StorePurchaseApp",
-                    "Microsoft.Todos",
-                    "microsoft.windowscommunicationsapps",
-                    "Microsoft.WindowsFeedbackHub",
-                    "Microsoft.WindowsMaps",
-                    "Microsoft.Xbox.TCUI",
-                    "Microsoft.XboxGameOverlay",
-                    "Microsoft.XboxGamingOverlay",
-                    "Microsoft.XboxIdentityProvider",
-                    "Microsoft.XboxSpeechToTextOverlay",
-                    "Microsoft.YourPhone",
-                    "Microsoft.ZuneMusic",
-                    "Microsoft.ZuneVideo"
-                   ],
-    "UpdateDrivers":  {
-                          "IsPresent":  true
-                      },
-    "UpdateWindows":  {
-                          "IsPresent":  true
-                      }
-}
-'@
-If (!(Test-Path "C:\ProgramData\OSDeploy")) {
-    New-Item "C:\ProgramData\OSDeploy" -ItemType Directory -Force | Out-Null
-}
-$OOBEDeployJson | Out-File -FilePath "C:\ProgramData\OSDeploy\OSDeploy.OOBEDeploy.json" -Encoding ascii -Force
 
 #================================================
 #  [PostOS] AutopilotOOBE Configuration Staging
@@ -123,19 +60,12 @@ $AutopilotOOBEJson | Out-File -FilePath "C:\ProgramData\OSDeploy\OSDeploy.Autopi
 #================================================
 #  [PostOS] OOBE CMD Command Line
 #================================================
-Invoke-RestMethod https://raw.githubusercontent.com/caseydaviscec/osdcloud/main/Set-LenovoAssetTag.ps1 | Out-File -FilePath 'C:\Windows\Setup\scripts\set-lenovoassettag.ps1' -Encoding ascii -Force
-Invoke-RestMethod https://raw.githubusercontent.com/caseydaviscec/osdcloud/refs/heads/main/Rename-Computer.ps1 | Out-File -FilePath 'C:\Windows\Setup\scripts\rename-computer.ps1' -Encoding ascii -Force
 Invoke-RestMethod https://raw.githubusercontent.com/caseydaviscec/osdcloud/refs/heads/main/Autopilot.ps1 | Out-File -FilePath 'C:\Windows\Setup\scripts\autopilot.ps1' -Encoding ascii -Force
-Invoke-RestMethod https://raw.githubusercontent.com/caseydaviscec/osdcloud/refs/heads/main/Set-LenovoBios.ps1 | Out-File -FilePath 'C:\Windows\Setup\scripts\set-lenovobios.ps1' -Encoding ascii -Force
+
 $OOBECMD = @'
 @echo off
 
-# Prompt for setting Lenovo Asset Tag
-start /wait powershell.exe -NoL -ExecutionPolicy Bypass -F C:\Windows\Setup\Scripts\set-lenovoassettag.ps1
-# Executes Teams Webhook Notification to Teams > Windows 11 Rollout
-# start /wait powershell.exe -NoL -ExecutionPolicy Bypass -F C:\Windows\Setup\Scripts\teams-webhook.ps1
-
-# Below a PS session for debug and testing in system context, comment out when not needed 
+# Below a PS session for debug and testing in system context, # when not needed 
 start /wait powershell.exe -NoL -ExecutionPolicy Bypass
 
 exit 
@@ -176,7 +106,7 @@ $Panther = 'C:\Windows\Panther'
 $UnattendPath = "$Panther\Unattend.xml"
 $UnattendXml | Out-File -FilePath $UnattendPath -Encoding utf8 -Width 2000 -Force
 
-Write-Host "Copying USB Drive Scripts and AssetTag.txt"
+Write-Host "Copying USB Drive Scripts"
 Copy-Item X:\OSDCloud\Config\Scripts C:\OSDCloud\ -Recurse -Force
 
 #=======================================================================
